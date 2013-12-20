@@ -1,0 +1,7 @@
+build:
+  coffee: make js
+  haml: make mo
+  py: make mo && make test
+  sass: make css
+  po: make mo
+loglevel: info

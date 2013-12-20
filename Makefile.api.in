@@ -1,0 +1,53 @@
+PROJECT_DIR=project
+PYTEST_TARGET=$(PROJECT_DIR)/tests/test*.py
+VERSION=$(PROJECT_DIR)/static/version
+LOCALES=
+test=
+
+all: mo test $(VERSION)
+
+.SUFFIXES: .mapping .pot
+.mapping.pot:
+	pybabel extract -o $@ -F $< $(PROJECT_DIR)
+	for locale in $(LOCALES); do\
+		if [ -e $(dir $@)$$locale/LC_MESSAGES/$(notdir $(basename $@)).po ]; then\
+			pybabel update -D $(notdir $*) -i $@ -d $(PROJECT_DIR)/locales -l $$locale;\
+		else\
+			pybabel init   -D $(notdir $*) -i $@ -d $(PROJECT_DIR)/locales -l $$locale;\
+		fi;\
+	done
+PY=$(wildcard $(PROJECT_DIR)/*.py)
+PYMAPPING=$(wildcard $(PROJECT_DIR)/locales/*.py.mapping)
+$(PYMAPPING:.mapping=.pot): $(HTML) $(PY)
+POT=$(PYMAPPING:.mapping=.pot)
+.SUFFIXES: .po .mo
+.po.mo:
+	pybabel compile -d $(PROJECT_DIR)/locales -D $(notdir $*)
+PO=$(wildcard $(PROJECT_DIR)/locales/*/LC_MESSAGES/*.po)
+MO=$(PO:.po=.mo)
+
+
+clean:
+	find . -type d -name .cache |xargs rm -rf
+	find . -type d -name __pycache__ |xargs rm -rf
+	find . -type d -name htmlcov |xargs rm -rf
+	find ./ -name "*.pyc" -delete
+	find ./ -name .DS_Store -delete
+	find ./ -name .coverage -delete
+	rm -f $(MO) $(VERSION)
+
+$(VERSION): $(PY) $(PO)
+	git log -1 --format="%h" > $@
+
+mo: $(PYMAPPING) $(POT) $(MO)
+
+test:
+	@py.test $(PYTEST_TARGET) --doctest-modules --cov-report=html --cov=$(PROJECT_DIR) $(test)
+
+devserver:
+	cd $(PROJECT_DIR); python hello.py
+
+runserver:
+	cd $(PROJECT_DIR); ./async.sh
+
+.PHONY: all clean test runserver

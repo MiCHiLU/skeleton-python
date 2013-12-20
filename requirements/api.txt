@@ -1,0 +1,10 @@
+aiohttp
+bottle
+gunicorn
+jsonrpc2
+pyquery
+webtest
+
+# i18n tools
+# Ref. https://github.com/GoogleCloudPlatform/appengine-i18n-sample-python
+babel

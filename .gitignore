@@ -1,0 +1,25 @@
+syntax: glob
+
+*.css
+*.egg
+*.egg-info
+*.js
+*.mo
+*.pot
+*.py?
+*.so
+*.sw?
+*.tmp
+*~
+.DS_Store
+.cache
+.coverage
+.sass-cache
+Gemfile.lock
+htmlcov
+node_modules
+project/static/version
+project/templates/*.html
+tags
+
+syntax: regexp

@@ -1,0 +1,108 @@
+all: css js mo test
+
+
+PROJECT_DIR=project
+TEMPLATE_DIR=templates
+TEMPLATE_DIR_PATH=$(PROJECT_DIR)/$(TEMPLATE_DIR)
+JS_DIR=$(PROJECT_DIR)/static/js
+CSS_DIR=$(PROJECT_DIR)/static/css
+PYTEST_TARGET=$(PROJECT_DIR)/tests/test*.py
+BIN_COFFEE=node_modules/coffee-script/bin/coffee
+BIN_TESTACULAR=node_modules/testacular/bin/testacular
+BIN_UGLIFYJS=node_modules/uglify-js/bin/uglifyjs
+BIN_PHANTOMJS=$(HOME)/local/bin/phantomjs
+TESTACULAR_TARGET=$(PROJECT_DIR)/tests/test*.coffee
+VERSION=$(PROJECT_DIR)/static/version
+LOCALES=
+test=
+
+.SUFFIXES: .haml .html
+.haml.html:
+	haml -f html5 -t ugly $< $@
+HAML = $(wildcard $(TEMPLATE_DIR_PATH)/*.haml $(TEMPLATE_DIR_PATH)/admin/*.haml $(PROJECT_DIR)/static/*.haml)
+HTML = $(HAML:.haml=.html)
+
+.SUFFIXES: .coffee .js
+.coffee.js:
+	$(BIN_COFFEE) -b -c $<
+.SUFFIXES: .js .min.js
+.js.min.js:
+	$(BIN_UGLIFYJS) --define PRODUCTION=0 -nc -m -r "$$" -o $@ $<
+COFFEE = $(wildcard $(JS_DIR)/*.coffee)
+JS = $(COFFEE:.coffee=.js)
+MINJS = $(JS:.js=.min.js)
+TESTACULAR_COFFEE = $(wildcard $(TESTACULAR_TARGET))
+TESTACULAR_JS = $(TESTACULAR_COFFEE:.coffee=.js)
+
+.SUFFIXES: .sass .css
+.sass.css:
+	compass compile $< -c $(CSS_DIR)/config.rb
+.SUFFIXES: .sass .min.css
+.sass.min.css:
+	compass compile --environment production $< -c $(CSS_DIR)/config.rb
+	mv $*.css $@
+SASS = $(wildcard $(CSS_DIR)/*.sass)
+CSS = $(SASS:.sass=.css)
+MINCSS = $(SASS:.sass=.min.css)
+
+.SUFFIXES: .mapping .pot
+.mapping.pot:
+	pybabel extract -o $@ -F $< $(PROJECT_DIR)
+	for locale in $(LOCALES); do\
+		if [ -e $(dir $@)$$locale/LC_MESSAGES/$(notdir $(basename $@)).po ]; then\
+			pybabel update -D $(notdir $*) -i $@ -d $(PROJECT_DIR)/locales -l $$locale;\
+		else\
+			pybabel init   -D $(notdir $*) -i $@ -d $(PROJECT_DIR)/locales -l $$locale;\
+		fi;\
+	done
+PY=$(wildcard $(PROJECT_DIR)/*.py)
+PYMAPPING=$(wildcard $(PROJECT_DIR)/locales/*.py.mapping)
+$(PYMAPPING:.mapping=.pot): $(HTML) $(PY)
+JSMAPPING=$(wildcard $(PROJECT_DIR)/locales/*.js.mapping)
+$(JSMAPPING:.mapping=.pot): $(JS)
+POT=$(PYMAPPING:.mapping=.pot) $(JSMAPPING:.mapping=.pot)
+.SUFFIXES: .po .mo
+.po.mo:
+	pybabel compile -d $(PROJECT_DIR)/locales -D $(notdir $*)
+PO=$(wildcard $(PROJECT_DIR)/locales/*/LC_MESSAGES/*.po)
+MO=$(PO:.po=.mo)
+
+
+clean:
+	find . -type d -name .cache |xargs rm -rf
+	find . -type d -name .sass-cache |xargs rm -rf
+	find . -type d -name __pycache__ |xargs rm -rf
+	find . -type d -name htmlcov |xargs rm -rf
+	find ./ -name "*.pyc" -delete
+	find ./ -name .DS_Store -delete
+	find ./ -name .coverage -delete
+	find $(PROJECT_DIR)/templates -name "*.py" -delete
+	rm -f $(CSS)
+	rm -f $(HTML)
+	rm -f $(JS)
+	rm -f $(MINCSS)
+	rm -f $(MINJS)
+	rm -f $(TESTACULAR_JS)
+	rm -f $(MO)
+
+$(VERSION):
+	git log dev -1 --format="%h" > $@
+
+template: $(VERSION) $(HTML)
+
+js: $(JS) $(MINJS) $(TESTACULAR_JS)
+
+css: $(MINCSS) $(CSS)
+
+mo: $(PYMAPPING) $(JSMAPPING) $(POT) $(MO)
+
+test: template
+	@py.test $(PYTEST_TARGET) --doctest-modules --cov-report=html --cov=$(PROJECT_DIR) $(test)
+
+testacular: js
+	PHANTOMJS_BIN=$(BIN_PHANTOMJS) $(BIN_TESTACULAR) start $(PROJECT_DIR)/tests/testacular.conf.js
+
+runserver: template css js
+	$(PROJECT_DIR)/wsgi.py
+
+.PHONY: all template clean test runserver
