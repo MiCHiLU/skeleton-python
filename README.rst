@@ -1,16 +1,16 @@
-skelton-python
-==============
+skeleton-python
+===============
 
 Downloading
 -----------
 
 check out this sample codes::
 
-  $ git clone https://github.com/MiCHiLU/skelton-python
+  $ git clone https://github.com/MiCHiLU/skeleton-python.git
 
-and move into the skelton-python directory::
+and move into the skeleton-python directory::
 
-  $ cd skelton-python
+  $ cd skeleton-python
 
 Installing tools
 ----------------

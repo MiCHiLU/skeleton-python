@@ -1,9 +1,9 @@
 {
-  "name": "skelton-python",
+  "name": "skeleton-python",
   "version": "0.0.1",
   "repository": {
     "type": "git",
-    "url": "https://github.com/MiCHiLU/skelton-python.git"
+    "url": "https://github.com/MiCHiLU/skeleton-python.git"
   },
   "dependencies": {
     "coffee-script": ">=1.3.1",
