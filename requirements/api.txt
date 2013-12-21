@@ -2,7 +2,7 @@ aiohttp
 bottle
 gunicorn
 jsonrpc2
-pyquery
+#pyquery
 webtest
 
 # i18n tools
