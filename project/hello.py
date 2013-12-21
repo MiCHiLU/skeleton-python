@@ -1,8 +1,15 @@
-from bottle import route, template, default_app
-import httplib2
+#!/bin/usr/env python
+# -*- coding: utf-8 -*-
+import csv
 import json
 import pprint
-import logging
+
+from bottle import (
+    default_app,
+    route,
+    template,
+)
+import httplib2
 
 @route("/hello/<name>")
 def hello(name):
@@ -10,22 +17,15 @@ def hello(name):
 
 @route("/weather/<location>")
 def weather(location):
-    #location = "London,uk"
-    url = "http://api.openweathermap.org/data/2.5/weather?q={0}"
-    url = url.format(location)
-    h = httplib2.Http(".cache")
-    #resp, content = h.request(url, "GET")
-    response = h.request(url, "GET")
-    resp = response[0]
-    content = response[1]
-    #logging.error(resp)
-    #logging.error(content)
+    base_url = "http://api.openweathermap.org/data/2.5/weather?q={0}"
+    url = base_url.format(location)
+    http_client = httplib2.Http(".cache")
+    resp, content = http_client.request(url, "GET")
     data = json.loads(content.decode("utf-8"))
-    write(data)
+    csv_write(data)
     return template("hello", name=pprint.pformat(data))
 
-import csv
-def write(data):
+def csv_write(data):
     with open('json.csv', 'w', newline='') as csvfile:
         spamwriter = csv.writer(csvfile, delimiter=' ',
                                 quotechar='|', quoting=csv.QUOTE_MINIMAL)
