@@ -6,6 +6,12 @@ test=
 
 all: mo test $(VERSION)
 
+.SUFFIXES: .haml .html
+.haml.html:
+	haml -f html5 $< $@
+HAML = $(wildcard $(TEMPLATE_DIR_PATH)/*.haml $(TEMPLATE_DIR_PATH)/admin/*.haml $(PROJECT_DIR)/static/*.haml $(PROJECT_DIR)/views/*.haml)
+HTML = $(HAML:.haml=.html)
+
 .SUFFIXES: .mapping .pot
 .mapping.pot:
 	pybabel extract -o $@ -F $< $(PROJECT_DIR)
@@ -38,6 +44,8 @@ clean:
 
 $(VERSION): $(PY) $(PO)
 	git log -1 --format="%h" > $@
+
+html: $(HTML)
 
 mo: $(PYMAPPING) $(POT) $(MO)
 

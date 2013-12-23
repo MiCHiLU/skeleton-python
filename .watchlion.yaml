@@ -1,6 +1,6 @@
 build:
   coffee: make js
-  haml: make mo
+  haml: make html
   py: make mo && make test
   sass: make css
   po: make mo
