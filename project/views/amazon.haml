@@ -1,0 +1,29 @@
+!!!
+%html/
+%head
+ %base(href="http://localhost:8000/")
+ %link(rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css")
+%body/
+.row
+ .col-md-6.col-md-offset-3
+
+  .panel.panel-default
+   %form(role="form")
+    .form-group
+     %label Amazon API search
+     %input.form-control(type="text" placeholder="keywords")
+    %button.btn.btn-default(type="submit") Search
+
+  .panel.panel-default
+   %label Results
+   %ul.list-group
+    -#\% for item in items:
+    -#%li.list-group-item {{item}}
+    -#\% end
+    %li.list-group-item Cras justo odio
+    %li.list-group-item Cras justo odio
+    %li.list-group-item Cras justo odio
+    %li.list-group-item Cras justo odio
+    %li.list-group-item Cras justo odio
+    %li.list-group-item Cras justo odio
+    %li.list-group-item Cras justo odio
