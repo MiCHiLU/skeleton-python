@@ -8,10 +8,10 @@
  .col-md-6.col-md-offset-3
 
   .panel.panel-default
-   %form(role="form")
+   %form(method="post" role="form")
     .form-group
      %label Amazon API search
-     %input.form-control(type="text" placeholder="keywords")
+     %input.form-control(type="text" name="keywords" placeholder="keywords" value="{{keywords}}")
     %button.btn.btn-default(type="submit") Search
 
   .panel.panel-default

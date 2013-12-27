@@ -8,10 +8,10 @@
 <div class='row'>
   <div class='col-md-6 col-md-offset-3'>
     <div class='panel panel-default'>
-      <form role='form'>
+      <form method='post' role='form'>
         <div class='form-group'>
           <label>Amazon API search</label>
-          <input class='form-control' placeholder='keywords' type='text'>
+          <input class='form-control' name='keywords' placeholder='keywords' type='text' value='{{keywords}}'>
         </div>
         <button class='btn btn-default' type='submit'>Search</button>
       </form>

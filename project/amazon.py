@@ -5,11 +5,19 @@ from bottle import (
     default_app,
     route,
     template,
+    get,
+    post,
+    request,
 )
 
-@route("/")
-def amazon():
+@get("/")
+def amazon_get():
     return template("amazon")
+
+@post("/")
+def amazon_post():
+    keywords = request.forms.get('keywords')
+    return template("amazon", keywords=keywords)
 
 app = default_app()
 
