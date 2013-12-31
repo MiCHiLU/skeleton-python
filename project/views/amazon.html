@@ -19,13 +19,9 @@
     <div class='panel panel-default'>
       <label>Results</label>
       <ul class='list-group'>
-        <li class='list-group-item'>Cras justo odio</li>
-        <li class='list-group-item'>Cras justo odio</li>
-        <li class='list-group-item'>Cras justo odio</li>
-        <li class='list-group-item'>Cras justo odio</li>
-        <li class='list-group-item'>Cras justo odio</li>
-        <li class='list-group-item'>Cras justo odio</li>
-        <li class='list-group-item'>Cras justo odio</li>
+        % for book in results:
+        <li class='list-group-item'>{{book.ItemAttributes.Title}}</li>
+        % end
       </ul>
     </div>
   </div>

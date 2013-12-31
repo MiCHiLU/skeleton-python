@@ -17,13 +17,6 @@
   .panel.panel-default
    %label Results
    %ul.list-group
-    -#\% for item in items:
-    -#%li.list-group-item {{item}}
-    -#\% end
-    %li.list-group-item Cras justo odio
-    %li.list-group-item Cras justo odio
-    %li.list-group-item Cras justo odio
-    %li.list-group-item Cras justo odio
-    %li.list-group-item Cras justo odio
-    %li.list-group-item Cras justo odio
-    %li.list-group-item Cras justo odio
+    \% for book in results:
+    %li.list-group-item {{book.ItemAttributes.Title}}
+    \% end
